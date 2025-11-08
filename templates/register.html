@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sign Up – FitCal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --deep-green: #3b4d35;
+      --sage: #a7b79f;
+      --light-green: #cdd5c2;
+      --coffee: #8b6f47;
+      --beige: #e4d8c3;
+      --text-dark: #2d2b26;
+      --white: #fefdfb;
+      --error-red: #c62828;
+      --success-green: #2e7d32;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(to bottom, #f3f5f0, #eef1e6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text-dark);
+      padding: 1rem;
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .signup-container {
+      background: var(--white);
+      padding: 30px 35px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--deep-green);
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+      text-shadow: 1px 1px 2px rgba(139,111,71,0.3);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--deep-green);
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--sage);
+      background-color: #f9f8f4;
+      font-size: 14px;
+      color: var(--text-dark);
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 10px;
+      background: linear-gradient(135deg, var(--deep-green), #4f6548);
+      border: none;
+      border-radius: 8px;
+      color: var(--white);
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    button:hover { transform: scale(1.03); }
+
+    .flash-message {
+      margin-bottom: 15px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .flash-error {
+      background-color: #fbeaea;
+      color: var(--error-red);
+      border: 1px solid #f5c2c2;
+    }
+
+    .flash-success {
+      background-color: #e6f4ea;
+      color: var(--success-green);
+      border: 1px solid #b2d8b2;
+    }
+
+    .login-link {
+      margin-top: 10px;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--deep-green);
+      transition: color 0.2s ease;
+    }
+    .login-link:hover { color: var(--coffee); }
+
+  </style>
+</head>
+<body>
+
+  <div class="signup-container">
+    <h2>Create Your FitCal Account</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message {% if category == 'error' %}flash-error{% elif category == 'success' %}flash-success{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" placeholder="Choose a username" required>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter a password" required>
+
+      <button type="submit">Sign Up</button>
+    </form>
+
+    <a href="{{ url_for('login') }}" class="login-link">Already have an account? Login</a>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Log Meals – FitCal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-main: #f3efe6;
+      --deep-green: #3b4d35;
+      --sage: #a7b79f;
+      --light-green: #cdd5c2;
+      --coffee: #8b6f47;
+      --beige: #e4d8c3;
+      --text-dark: #2d2b26;
+      --white: #fefdfb;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(180deg, var(--bg-main), #f7f5f0);
+      padding: 1rem;
+      color: var(--text-dark);
+      opacity: 0;
+      animation: fadeIn 0.6s ease forwards;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    @keyframes fadeIn { to { opacity: 1; } }
+
+    h2 {
+      text-align: center;
+      margin: 60px 0 20px 0;
+      color: var(--deep-green);
+      letter-spacing: 1px;
+      font-weight: 700;
+      text-shadow: 1px 1px 2px rgba(100, 85, 60, 0.3);
+      font-size: 1.6rem;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      padding: 8px 16px;
+      background-color: var(--coffee);
+      color: var(--white);
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: transform 0.2s ease, background 0.3s ease;
+      z-index: 10;
+    }
+    .back-button:hover {
+      background-color: #5e4a38;
+      transform: scale(1.05);
+    }
+
+    form {
+      max-width: 450px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 20px 25px;
+      border-radius: 14px;
+      border: 1px solid var(--beige);
+      box-shadow: 0 6px 18px rgba(57, 61, 57, 0.1);
+      margin-top: 20px;
+    }
+
+    label {
+      font-weight: 600;
+      color: var(--deep-green);
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      border: 1px solid var(--sage);
+      border-radius: 8px;
+      background-color: #f9f8f4;
+      font-size: 14px;
+      color: var(--text-dark);
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, var(--deep-green), #4f6548);
+      border: none;
+      color: var(--white);
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.95rem;
+    }
+    button:hover { transform: scale(1.03); }
+
+    .link-button {
+      margin-top: 10px;
+      display: block;
+      text-align: center;
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      background: linear-gradient(135deg, #d8cbbb, #bca27d);
+      color: #3a2f2b;
+      transition: all 0.3s ease;
+    }
+    .link-button:hover {
+      transform: scale(1.03);
+      background: linear-gradient(135deg, #cdbca3, #b59c7a);
+    }
+
+    table {
+      margin: 25px auto;
+      width: 100%;
+      max-width: 450px;
+      border-collapse: collapse;
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid var(--beige);
+      overflow: hidden;
+      font-size: 0.85rem;
+    }
+
+    th, td { padding: 10px; text-align: center; border-bottom: 1px solid #eee; }
+    th { background: var(--deep-green); color: white; font-weight: 600; letter-spacing: 0.5px; }
+    tr:nth-child(even) { background: #f6f5f1; }
+    tr:hover { background: #e7eedc; }
+
+    footer { text-align: center; font-size: 12px; color: #7a6a55; margin-top: 35px; }
+    .entry-section { text-align: center; margin-top: 25px; }
+    .entry-section h3 { color: var(--coffee); margin-bottom: 10px; font-size: 1.1rem; }
+  </style>
+</head>
+<body>
+
+  <a class="back-button" href="{{ url_for('index') }}">← Back to Dashboard</a>
+
+  <h2>Log Your Meal</h2>
+
+  <form method="POST" action="{{ url_for('log_meals') }}">
+    <label for="foodname">Food Name:</label>
+    <input type="text" id="foodname" name="foodname" placeholder="e.g. Chicken Breast" required>
+
+    <label for="quantity">Quantity (grams):</label>
+    <input type="number" id="quantity" name="quantity" min="1" placeholder="e.g. 150" required>
+
+    <button type="submit">Search & Log</button>
+    <a class="link-button" href="{{ url_for('meal_details') }}">📊 View Meal Details</a>
+  </form>
+
+  {% if item %}
+  <div class="entry-section">
+    <h3>✨ Most Recent Entry</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Food Name</th>
+          <th>Quantity (g)</th>
+          <th>Calories</th>
+          <th>Protein (g)</th>
+          <th>Carbs (g)</th>
+          <th>Fats (g)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>{{ quantity }}</td>
+          <td>{{ (item.calories_per_100g * quantity / 100) | round(2) }}</td>
+          <td>{{ (item.protein * quantity / 100) | round(2) }}</td>
+          <td>{{ (item.carbs * quantity / 100) | round(2) }}</td>
+          <td>{{ (item.fats * quantity / 100) | round(2) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  {% elif searched %}
+  <p class="entry-section" style="color:#a33e2a; font-weight:600;">❌ No food item found with that name.</p>
+  {% endif %}
+
+  <footer>FitCal – Track • Fuel • Thrive</footer>
+
+</body>
+</html>

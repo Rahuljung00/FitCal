@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Meal Details – FitCal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --green: #145236;
+      --green-light: #2e6b50;
+      --text-dark: #2c2a26;
+      --white: #ffffff;
+      --gray: #e0e0e0;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--white);
+      color: var(--text-dark);
+      padding: 1.5rem;
+      margin: 0;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--green);
+      margin: 2rem 0 1.5rem;
+      font-weight: 600;
+      font-size: 1.6rem;
+    }
+
+    .back-button {
+      display: inline-block;
+      padding: 8px 16px;
+      background: var(--green);
+      color: var(--white);
+      text-decoration: none;
+      font-weight: 500;
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      transition: background 0.2s ease;
+    }
+    .back-button:hover {
+      background: var(--green-light);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 1rem 0;
+    }
+
+    table {
+      width: 100%;
+      min-width: 700px;
+      border-collapse: collapse;
+      background: var(--white);
+      border: 1px solid var(--gray);
+      table-layout: auto;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid var(--gray);
+      font-size: 0.9rem;
+      white-space: nowrap; /* prevent text from cutting off */
+    }
+
+    th {
+      background: var(--green);
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    tbody tr:nth-child(even) { background: #f7f7f7; }
+    tbody tr:hover { background: #e9f0e8; }
+
+    .total-row { font-weight: 600; background: #f0f7f0; }
+
+    .totals {
+      max-width: 600px;
+      margin: 1.5rem auto;
+      padding: 15px 20px;
+      border: 1px solid var(--gray);
+      border-radius: 6px;
+      background: #f7f7f7;
+      word-wrap: break-word;
+    }
+
+    .totals h3 {
+      margin: 0 0 10px;
+      color: var(--green);
+      font-weight: 600;
+      font-size: 1.2rem;
+    }
+
+    .totals p { margin: 4px 0; font-size: 0.95rem; }
+
+    .delete-btn, .delete-all-btn {
+      padding: 4px 10px;
+      border: 1px solid var(--green);
+      color: var(--green);
+      background: none;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      white-space: nowrap;
+    }
+    .delete-btn:hover, .delete-all-btn:hover { 
+      background: var(--green); 
+      color: var(--white); 
+    }
+
+    .flash {
+      max-width: 500px;
+      margin: 1rem auto;
+      padding: 8px 12px;
+      text-align: center;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      word-wrap: break-word;
+    }
+    .flash.success { background: #d9f0e0; color: #145236; }
+    .flash.warning { background: #fff4e0; color: #d97706; }
+    .flash.error { background: #fddede; color: #b91c1c; }
+
+    @media (max-width: 700px) {
+      body { padding: 1rem; }
+      table, .totals { width: 100%; }
+      h2 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="back-button" href="{{ url_for('index') }}">← Back</a>
+
+  <h2>Your Meal Log</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% if logs %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Food</th>
+          <th>Qty (g)</th>
+          <th>Cal</th>
+          <th>Pro (g)</th>
+          <th>Carb (g)</th>
+          <th>Fat (g)</th>
+          <th>
+            Action
+            <form action="{{ url_for('delete_all_logs') }}" method="POST" style="margin-top:4px;">
+              <button type="submit" class="delete-all-btn">Delete All</button>
+            </form>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.name }}</td>
+          <td>{{ "%.1f"|format(log.quantity) }}</td>
+          <td>{{ "%.0f"|format(log.calories) }}</td>
+          <td>{{ "%.1f"|format(log.protein) }}</td>
+          <td>{{ "%.1f"|format(log.carbs) }}</td>
+          <td>{{ "%.1f"|format(log.fats) }}</td>
+          <td>
+            <form action="{{ url_for('delete_log', log_id=log.id) }}" method="POST">
+              <button type="submit" class="delete-btn">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+        <tr class="total-row">
+          <td><strong>Total</strong></td>
+          <td>—</td>
+          <td>{{ "%.0f"|format(total_calories) }}</td>
+          <td>{{ "%.1f"|format(total_protein) }}</td>
+          <td>{{ "%.1f"|format(total_carbs) }}</td>
+          <td>{{ "%.1f"|format(total_fats) }}</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="totals">
+    <h3>Nutritional Summary</h3>
+    <p><strong>Calories:</strong> {{ "%.0f"|format(total_calories) }} kcal</p>
+    <p><strong>Protein:</strong> {{ "%.1f"|format(total_protein) }} g</p>
+    <p><strong>Carbohydrates:</strong> {{ "%.1f"|format(total_carbs) }} g</p>
+    <p><strong>Fats:</strong> {{ "%.1f"|format(total_fats) }} g</p>
+  </div>
+
+  {% else %}
+  <p style="text-align:center; margin-top:2rem; font-style:italic;">No meals logged. Begin your wellness journey today.</p>
+  <div style="text-align:center; margin-top:1rem;">
+    <a href="{{ url_for('log_meals') }}" style="color: var(--green); text-decoration: underline;">Log your first meal</a>
+  </div>
+  {% endif %}
+
+</body>
+</html>

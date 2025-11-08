@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitCal – Track • Fuel • Thrive</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <header class="header">
+   <div class="container header-flex">
+  <h1 class="logo">FitCal</h1>
+  <nav>
+    <a href="{{ url_for('login') }}" class="btn login">Login</a>
+    <a href="{{ url_for('register') }}" class="btn register">Register</a>
+  </nav>
+</div>
+
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Your Personal Calorie Companion</h2>
+      <p>
+        Welcome to <strong>FitCal</strong> — your go-to platform for tracking what you eat, how much you burn, and how you feel. Whether you're on a mission to lose weight, build muscle, or simply maintain a healthier lifestyle, FitCal provides a user-friendly interface to log your meals and gain insightful feedback.
+      </p>
+      <p>
+        Designed with simplicity and science in mind, FitCal helps you maintain consistency and awareness of your daily caloric intake. Built-in nutrition intelligence adapts to your needs, empowering you to make smarter dietary choices without stress.
+      </p>
+    </div>
+  </section>
+
+  <section class="about">
+    <div class="container">
+      <h3>What is FitCal?</h3>
+      <p>
+        FitCal is a smart calorie tracker designed for everyone — from fitness beginners to athletes. Our mission is to help you stay informed and in control of your nutritional habits. With FitCal, you can:
+      </p>
+      <ul>
+        <li><strong>Track:</strong> Log your daily meals and monitor your calorie intake easily.</li>
+        <li><strong>Fuel:</strong> Get personalized nutritional suggestions based on your goals — whether you're aiming to lose weight, gain muscle, or maintain your health.</li>
+        <li><strong>Thrive:</strong> Use insights and trends to build sustainable eating habits and improve your overall lifestyle.</li>
+      </ul>
+      <p>FitCal brings clarity to your plate — one meal at a time.</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2025 FitCal. All rights reserved.</p>
+  </footer>
+=======
+  <meta charset="UTF-8">
+  <title>Welcome – FitCal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --deep-green: #3b4d35;
+      --coffee: #8b6f47;
+      --sage: #a7b79f;
+      --white: #fefdfb;
+      --text-dark: #2d2b26;
+      --bg-main: #f3f5f0;
+      --bg-light: #eef1e6;
+      --button-gradient: linear-gradient(135deg, #3b4d35, #4f6548);
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(to bottom, var(--bg-main), var(--bg-light));
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: var(--text-dark);
+      animation: fadeIn 0.8s ease forwards;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .container {
+      text-align: center;
+      background: var(--white);
+      padding: 40px 35px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      max-width: 500px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: var(--deep-green);
+      margin-bottom: 15px;
+      text-shadow: 1px 1px 2px rgba(139,111,71,0.3);
+    }
+
+    p {
+      font-size: 1rem;
+      margin-bottom: 25px;
+      color: var(--text-dark);
+      line-height: 1.5;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 25px;
+      margin: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--white);
+      background: var(--button-gradient);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, #2d3c2a, #3f5238);
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #7a6a55;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Welcome to FitCal</h1>
+    <p>Track your meals, monitor your calories, and stay on top of your nutrition effortlessly.</p>
+
+    <a href="{{ url_for('login') }}" class="btn">Login</a>
+    <a href="{{ url_for('register') }}" class="btn">Sign Up</a>
+  </div>
+
+  <footer>FitCal – Track • Fuel • Thrive</footer>
+</body>
+</html>

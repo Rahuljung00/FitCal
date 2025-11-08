@@ -1,0 +1,261 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitCal Dashboard – Track • Fuel • Thrive</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <!-- Inline CSS -->
+  <style>
+    :root {
+      --green-dark: #3b4d35;
+      --green-medium: #4f6548;
+      --green-light: #cdd5c2;
+      --beige: #e4d8c3;
+      --coffee: #8b6f47;
+      --text-dark: #2d2b26;
+      --white: #fefdfb;
+      --grey-light: #f5f5f5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      background-color: var(--grey-light);
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: var(--green-dark);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      padding-top: 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      box-shadow: 2px 0 12px rgba(0,0,0,0.1);
+      transition: width 0.3s ease;
+    }
+    .sidebar .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      text-decoration: none;
+      color: var(--white);
+      font-weight: 600;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    .sidebar .nav-link i {
+      margin-right: 12px;
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+    .sidebar .nav-link:hover,
+    .sidebar .nav-link.active {
+      background-color: var(--green-medium);
+      color: var(--beige);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 220px;
+      flex: 1;
+      padding: 2rem;
+      animation: fadeIn 0.8s ease forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, var(--green-light), var(--beige));
+      padding: 30px 25px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+    .hero h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: var(--green-dark);
+    }
+    .hero h1 span {
+      color: var(--coffee);
+    }
+    .hero p {
+      font-size: 1rem;
+      color: var(--text-dark);
+    }
+
+    /* Features Section */
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .feature {
+      background-color: var(--white);
+      flex: 1 1 250px;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+    .feature i {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      color: var(--green-dark);
+    }
+    .feature h3 {
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: var(--coffee);
+    }
+    .feature p {
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      color: var(--text-dark);
+    }
+    .feature-btn {
+      display: inline-block;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--green-dark), var(--coffee));
+      color: var(--white);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .feature-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, var(--green-medium), #a5845a);
+    }
+
+    /* About Section */
+    .about {
+      background-color: var(--white);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 40px;
+    }
+    .about h2 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: var(--green-dark);
+    }
+    .about p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--text-dark);
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      font-size: 0.85rem;
+      color: var(--text-dark);
+      background-color: var(--green-light);
+      border-radius: 8px;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .features {
+        flex-direction: column;
+      }
+      .main-content {
+        margin-left: 0;
+        padding: 1.5rem;
+      }
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+      .sidebar .nav-link {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <a class="nav-link active" href="{{ url_for('index') }}"><i class="fas fa-home"></i>Home</a>
+    <a class="nav-link" href="{{ url_for('log_meals') }}"><i class="fas fa-seedling"></i>Log Meals</a>
+    <a class="nav-link" href="#"><i class="fas fa-dumbbell"></i>Count Calories</a>
+    <a class="nav-link" href="#"><i class="fas fa-chart-pie"></i>Profile</a>
+    <a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i>Logout</a>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <section class="hero">
+      <h1>Welcome back, <span>{{ session.get('username', 'User') }}</span>!</h1>
+      <p>Track your meals, monitor nutrients, and reach your fitness goals with ease.</p>
+    </section>
+
+    <section class="features">
+      <div class="feature">
+        <i class="fas fa-utensils"></i>
+        <h3>Log Meals</h3>
+        <p>Easily log your meals and calculate calories automatically.</p>
+        <a href="{{ url_for('log_meals') }}" class="feature-btn">Start Logging</a>
+      </div>
+      <div class="feature">
+        <i class="fas fa-chart-line"></i>
+        <h3>View Stats</h3>
+        <p>Analyze your daily, weekly, and monthly nutrition progress.</p>
+        <a href="{{ url_for('meal_details') }}" class="feature-btn">View Stats</a>
+      </div>
+      <div class="feature">
+        <i class="fas fa-bullseye"></i>
+        <h3>Set Goals</h3>
+        <p>Define calorie and macro goals to keep your diet on track.</p>
+        <a href="#" class="feature-btn">Set Goals</a>
+      </div>
+    </section>
+
+    <section class="about">
+      <h2>About FitCal</h2>
+      <p>FitCal helps individuals take control of their diet and exercise routines. Whether your goal is weight loss, muscle gain, or general wellness, FitCal provides insights and tracking tools to help you succeed consistently.</p>
+    </section>
+
+    <footer>
+      &copy; 2025 FitCal — Built with purpose for your wellness journey.
+    </footer>
+  </main>
+
+</body>
+</html>
