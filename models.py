@@ -4,6 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
 
+
+
+
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:CLFA5ACD5C@localhost:5432/FitCal"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False

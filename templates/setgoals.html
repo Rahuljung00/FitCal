@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitCal – Set Your Goals</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --green-dark: #175d35ff;
+      --green-medium: #11291eff;
+      --coffee: #8e8378ff;
+      --vibrant-green: #0f5c42ff;
+      --white: #fdfdfdff;
+      --grey-light: #cac3baff;
+      --text-dark: #1c1c1c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+
+    body { 
+      background-color: var(--grey-light); 
+      color: var(--text-dark); 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: flex-start;
+      padding: 20px;
+      font-size: 1.05rem;
+    }
+
+    h1 { 
+      margin-top: 45px;
+      margin-bottom: 20px; 
+      color: var(--green-dark); 
+      font-size: 2rem; 
+      text-align: center;
+    }
+
+    .goal-form {
+      background-color: var(--white);
+      padding: 25px 22px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      border-left: 6px solid var(--green-medium);
+    }
+
+    .goal-form label {
+      display: block;
+      margin: 12px 0 5px;
+      font-weight: 500;
+      font-size: 1rem;
+      color: var(--coffee);
+    }
+
+    .goal-form input, .goal-form select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      color: var(--text-dark);
+    }
+
+    .goal-form button {
+      margin-top: 18px;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--green-medium);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .goal-form button:hover { background-color: var(--vibrant-green); }
+
+    .back-btn {
+      margin-top: 15px;
+      text-decoration: none;
+      display: inline-block;
+      color: var(--white);
+      background-color: var(--coffee);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background 0.3s ease;
+    }
+    .back-btn:hover { background-color: var(--green-dark); }
+
+  </style>
+</head>
+<body>
+
+  <h1>Set Your Fitness Goals</h1>
+
+  <form class="goal-form" method="POST">
+    <label for="goal-type">Goal Type</label>
+    <select id="goal-type" name="goal_type">
+      <option value="lose" {% if goal.goal_type == 'lose' %}selected{% endif %}>Lose Weight</option>
+      <option value="maintain" {% if goal.goal_type == 'maintain' %}selected{% endif %}>Maintain Weight</option>
+      <option value="gain" {% if goal.goal_type == 'gain' %}selected{% endif %}>Gain Weight</option>
+    </select>
+
+    <label for="target-calories">Target Daily Calories (kcal)</label>
+    <input type="number" id="target-calories" name="calories" value="{{ goal.calories }}" required />
+
+    <label for="duration">Goal Duration (weeks)</label>
+    <input type="number" id="duration" name="duration" min="1" value="{{ goal.duration or 4 }}" required />
+
+    <button type="submit">Save Goal</button>
+  </form>
+
+  <a class="back-btn" href="{{ url_for('maintenance') }}">
+    <i class="fas fa-arrow-left"></i> Back to Maintenance Calculator
+  </a>
+
+  <script>
+    const goalTypeSelect = document.getElementById('goal-type');
+    const caloriesInput = document.getElementById('target-calories');
+
+    function adjustCalories() {
+      let baseCalories = parseInt({{ goal.calories or 0 }});
+      if (!baseCalories) return;
+
+      const goalType = goalTypeSelect.value;
+      if (goalType === 'lose') caloriesInput.value = baseCalories - 300;
+      else if (goalType === 'gain') caloriesInput.value = baseCalories + 300;
+      else caloriesInput.value = baseCalories; // maintain
+    }
+
+    goalTypeSelect.addEventListener('change', adjustCalories);
+
+    // initial adjustment
+    adjustCalories();
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+</body>
+</html>

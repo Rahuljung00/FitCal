@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitCal – Maintenance Calories Calculator</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    :root {
+      --green-dark: #175d35ff;
+      --green-medium: #11291eff;
+      --coffee: #8e8378ff;
+      --vibrant-green: #0f5c42ff;
+      --white: #fdfdfdff;
+      --grey-light: #cac3baff;
+      --text-dark: #1c1c1c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+
+    body { 
+      background-color: var(--grey-light); 
+      color: var(--text-dark); 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: flex-start;
+      padding: 20px;
+      position: relative;
+      font-size: 1.05rem;
+    }
+
+    .dashboard-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--green-medium);
+      color: var(--white);
+      font-weight: 500;
+      font-size: 1.05rem;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 2px solid var(--green-dark);
+      transition: background 0.3s ease, transform 0.2s ease;
+      z-index: 100;
+    }
+    .dashboard-btn:hover { background-color: var(--vibrant-green); transform: translateY(-2px); }
+
+    h1 { text-align: center; margin-top: 45px; margin-bottom: 15px; color: var(--green-dark); font-size: 2rem; }
+
+    .calculator {
+      background-color: var(--white);
+      padding: 25px 22px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+      border-left: 6px solid var(--green-medium);
+      margin-top: 20px;
+    }
+
+    .calculator label { display: block; margin: 12px 0 5px; font-weight: 500; font-size: 1rem; color: var(--coffee); }
+
+    .calculator input, .calculator select { width: 100%; padding: 10px 12px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; color: var(--text-dark); }
+
+    .calculator button {
+      margin-top: 18px;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--green-medium);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .calculator button:hover { background-color: var(--vibrant-green); }
+
+    .set-goal-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 12px;
+      background-color: var(--coffee);
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      display: inline-block;
+      transition: background 0.3s ease;
+    }
+    .set-goal-btn:hover { background-color: var(--green-dark); }
+
+    .result { margin-top: 22px; font-size: 1.1rem; font-weight: 600; text-align: center; color: var(--green-dark); }
+
+    @media (max-width: 420px) {
+      .calculator { padding: 20px; max-width: 360px; }
+      h1 { font-size: 1.8rem; }
+      .calculator label, .calculator input, .calculator select { font-size: 0.95rem; }
+      .calculator button, .set-goal-btn { font-size: 0.95rem; padding: 10px; }
+      .result { font-size: 1rem; }
+      .dashboard-btn { font-size: 0.95rem; padding: 8px 14px; top: 15px; left: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="dashboard-btn" href="{{ url_for('index') }}">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+
+  <h1>Maintenance Calories</h1>
+
+  <div class="calculator">
+    <label for="gender">Gender</label>
+    <select id="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+    </select>
+
+    <label for="age">Age (years)</label>
+    <input type="number" id="age" min="1" value="25" />
+
+    <label for="weight">Weight (kg)</label>
+    <input type="number" id="weight" min="1" value="70" />
+
+    <label for="height">Height (cm)</label>
+    <input type="number" id="height" min="1" value="175" />
+
+    <label for="activity">Activity Level</label>
+    <select id="activity">
+      <option value="1.2">Sedentary (little or no exercise)</option>
+      <option value="1.375">Lightly active (1-3 days/week)</option>
+      <option value="1.55">Moderately active (3-5 days/week)</option>
+      <option value="1.725">Very active (6-7 days/week)</option>
+      <option value="1.9">Extra active (hard exercise)</option>
+    </select>
+
+    <button onclick="calculateMaintenance()">Calculate</button>
+
+    <div class="result" id="result"></div>
+
+    <!-- Set Goal Button -->
+    <a class="set-goal-btn" id="set-goal-btn" href="#">
+      <i class="fas fa-bullseye"></i> Set Goal
+    </a>
+  </div>
+
+  <script>
+    function calculateMaintenance() {
+      const gender = document.getElementById('gender').value;
+      const age = parseFloat(document.getElementById('age').value);
+      const weight = parseFloat(document.getElementById('weight').value);
+      const height = parseFloat(document.getElementById('height').value);
+      const activity = parseFloat(document.getElementById('activity').value);
+
+      if (!age || !weight || !height) {
+        document.getElementById('result').textContent = "Please fill all fields correctly.";
+        return;
+      }
+
+      // Mifflin-St Jeor Equation
+      let BMR;
+      if (gender === 'male') {
+        BMR = 10 * weight + 6.25 * height - 5 * age + 5;
+      } else {
+        BMR = 10 * weight + 6.25 * height - 5 * age - 161;
+      }
+
+      const maintenanceCalories = Math.round(BMR * activity);
+
+      document.getElementById('result').innerHTML = `
+        Your estimated <span style="color:var(--vibrant-green)">maintenance calories</span> is <strong>${maintenanceCalories} kcal/day</strong>
+      `;
+
+      // Update Set Goal button to pass calories to setgoal route
+      const setGoalBtn = document.getElementById('set-goal-btn');
+      setGoalBtn.href = `/setgoal?calories=${maintenanceCalories}`;
+    }
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+</body>
+</html>
