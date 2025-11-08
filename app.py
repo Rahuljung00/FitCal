@@ -76,9 +76,12 @@ def maintenance():
     return render_template("maintenance.html")
 
 
-@app.route("/setgoal")
-def setgoals():
-    return render_template("setgoals.html")
+@app.route('/setgoal')
+def set_goal():
+    # Get calories from query parameter
+    calories = request.args.get('calories', type=int)
+    return render_template('setgoals.html', calories=calories)
+
 
 @app.route("/logmeals", methods=["GET", "POST"])
 def log_meals():
@@ -192,6 +195,7 @@ def delete_all_meals():
     db.session.commit()
     flash("All meals deleted successfully!", "success")
     return redirect(url_for("meal_details"))
+
 
 
 @app.route("/logout")
