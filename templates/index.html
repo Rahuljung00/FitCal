@@ -16,6 +16,9 @@
       --coffee-dark: #958b55;
       --coffee-light: #d5c1c1;
       --text-light: #ffffff;
+      --text-dark: #2c2a26;
+      --goal-card-bg: #fafafa;
+      --goal-card-text: #145236;
     }
 
     * {
@@ -33,9 +36,7 @@
       overflow-x: hidden;
     }
 
-    /* ========================
-       Sidebar
-    ======================== */
+    /* Sidebar */
     .sidebar {
       width: 220px;
       background-color: var(--green-dark);
@@ -73,9 +74,7 @@
       border-left: 4px solid var(--coffee-dark);
     }
 
-    /* ========================
-       Main Content
-    ======================== */
+    /* Main Content */
     .main-content {
       margin-left: 220px;
       flex: 1;
@@ -113,7 +112,7 @@
       background: linear-gradient(135deg, var(--green-light), var(--coffee-dark));
       padding: 40px 30px;
       border-radius: 16px;
-      margin-bottom: 50px;
+      margin-bottom: 30px;
       text-align: center;
       box-shadow: 0 6px 20px rgba(196, 187, 87, 0.4);
     }
@@ -128,6 +127,25 @@
     }
 
     .hero p {
+      font-size: 1.2rem;
+    }
+
+    /* Calorie Goal Card */
+    .goal-card {
+      background-color: var(--goal-card-bg);
+      color: var(--goal-card-text);
+      padding: 25px 20px;
+      border-radius: 14px;
+      margin-bottom: 40px;
+      text-align: center;
+      font-weight: 600;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+    .goal-card h2 {
+      margin-bottom: 10px;
+      font-size: 1.8rem;
+    }
+    .goal-card p {
       font-size: 1.2rem;
     }
 
@@ -204,7 +222,6 @@
       box-shadow: 0 4px 12px rgba(52, 53, 52, 0.3);
     }
 
-    /* Responsive */
     @media (max-width: 900px) {
       .features {
         flex-direction: column;
@@ -235,7 +252,7 @@
 
   <!-- Sidebar -->
   <nav class="sidebar">
-    <a class="nav-link active" href="#"><i class="fas fa-home"></i>Home</a>
+    <a class="nav-link active" href="{{ url_for('index') }}"><i class="fas fa-home"></i>Home</a>
     <a class="nav-link" href="{{ url_for('log_meals') }}"><i class="fas fa-seedling"></i>Log Meals</a>
     <a class="nav-link" href="{{ url_for('maintenance') }}"><i class="fas fa-dumbbell"></i>Maintenance</a>
     <a class="nav-link" href="{{ url_for('set_goal') }}"><i class="fas fa-chart-pie"></i>Profile</a>
@@ -249,6 +266,19 @@
       <h1>Welcome to <span>FitCal</span></h1>
       <p>Your ultimate tool to track calories, nutrients, and reach your fitness goals effortlessly.</p>
     </section>
+
+    <!-- Calorie Goal Card -->
+    {% if current_goal %}
+    <div class="goal-card">
+      <h2>Daily Calorie Goal</h2>
+      <p>{{ current_goal.calories }} kcal</p>
+    </div>
+    {% else %}
+    <div class="goal-card">
+      <h2>Daily Calorie Goal</h2>
+      <p>Not set yet. <a href="{{ url_for('set_goal') }}" style="color:#c89a4b;">Set your goal</a></p>
+    </div>
+    {% endif %}
 
     <section class="features">
       <div class="feature">

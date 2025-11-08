@@ -27,6 +27,23 @@ class FoodItem(db.Model):
     def __repr__(self):
         return f"<FoodItem {self.name}>"
 
+
+class Goal(db.Model):
+    __tablename__ = "goals"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    goal_type = db.Column(db.String(20), nullable=False, default="maintain")  # lose, maintain, gain
+    calories = db.Column(db.Integer, nullable=False)
+    duration = db.Column(db.Integer, nullable=False, default=4)  # in weeks
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", backref="goal")
+
+    def __repr__(self):
+        return f"<Goal {self.goal_type} {self.calories} kcal for {self.user.username}>"
+    
+    
 class MealLog(db.Model):
     __tablename__ = "meal_logs"
     id = db.Column(db.Integer, primary_key=True)

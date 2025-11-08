@@ -1,26 +1,24 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from models import db, User ,FoodItem
+from models import db, User, FoodItem, MealLog, Goal
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-from utils import search_food
-from decimal import Decimal
-from models import FoodItem , MealLog
-from flask import request, render_template
 from utils import search_food  # your external API search logic
-
+from decimal import Decimal
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
 
-# DB config
+# ------------------ Database Configuration ------------------
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:CLFA5ACD5C@localhost:5432/FitCal"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 migrate = Migrate(app, db)
 
-# ---------- ROUTES ----------
+# ------------------ Routes ------------------
 
+# ---------- Authentication ----------
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -39,6 +37,7 @@ def login():
 
     return render_template("login.html")
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -46,43 +45,101 @@ def register():
         password = request.form.get("password")
 
         if User.query.filter_by(username=username).first():
-            flash("Username already taken")
+            flash("Username already taken.", "error")
             return redirect(url_for("register"))
 
         new_user = User(username=username)
-        new_user.password = password  # setter handles hashing
+        new_user.password = password  # setter hashes password
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Registration successful! Please log in.")
+        flash("Registration successful! Please log in.", "success")
         return redirect(url_for("login"))
 
     return render_template("signup.html")
 
-@app.route("/")
-def home():
-    return render_template("home.html")
 
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for("login"))
+
+
+# ---------- Dashboard ----------
+@app.route("/")
 @app.route("/index")
 def index():
-    goal = None
-    return render_template("index.html")  # Logged-in home/dashboard
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("login"))
+
+    # Fetch current user's goal
+    current_goal = Goal.query.filter_by(user_id=session["user_id"]).first()
+    return render_template("index.html", current_goal=current_goal)
 
 
-
-
-@app.route("/maintenance")
+# ---------- Maintenance ----------
+@app.route("/maintenance", methods=["GET", "POST"])
 def maintenance():
-    return render_template("maintenance.html")
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("login"))
+
+    calories_from_maintenance = None
+    if request.method == "POST":
+        # Example: assume you calculate maintenance calories here
+        weight = float(request.form.get("weight", 0))
+        height = float(request.form.get("height", 0))
+        age = int(request.form.get("age", 0))
+        gender = request.form.get("gender", "male")
+
+        if gender == "male":
+            calories_from_maintenance = int(10*weight + 6.25*height - 5*age + 5)
+        else:
+            calories_from_maintenance = int(10*weight + 6.25*height - 5*age - 161)
+
+        flash(f"Your estimated maintenance calories: {calories_from_maintenance} kcal", "success")
+
+    return render_template("maintenance.html", calories_from_maintenance=calories_from_maintenance)
 
 
-@app.route('/setgoal')
+# ---------- Set Goals ----------from flask import request
+
+
+@app.route("/setgoal", methods=["GET", "POST"])
 def set_goal():
-    # Get calories from query parameter
-    calories = request.args.get('calories', type=int)
-    return render_template('setgoals.html', calories=calories)
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("login"))
+
+    # If coming from maintenance calculator with calories in query string
+    calories = request.args.get("calories", None)
+
+    if request.method == "POST":
+        calories_input = request.form.get("calories")
+        if calories_input:
+            calories_value = int(calories_input)
+
+            # Save/update goal for the current user
+            goal = Goal.query.filter_by(user_id=session["user_id"]).first()
+            if not goal:
+                goal = Goal(user_id=session["user_id"], calories=calories_value)
+                db.session.add(goal)
+            else:
+                goal.calories = calories_value
+
+            db.session.commit()
+            flash("Daily calorie goal set successfully!", "success")
+            return redirect(url_for("index"))
+
+    # GET request: render template with pre-filled calories
+    goal = Goal.query.filter_by(user_id=session["user_id"]).first()
+    current_calories = calories or (goal.calories if goal else "")
+    return render_template("setgoals.html", current_goal={"calories": current_calories})
 
 
+# ---------- Log Meals ----------
 @app.route("/logmeals", methods=["GET", "POST"])
 def log_meals():
     if "user_id" not in session:
@@ -111,12 +168,12 @@ def log_meals():
                 else:
                     item = existing
 
-        # Save the meal log
+        # Save meal log
         if item:
             new_log = MealLog(
                 food_id=item.id,
                 quantity=quantity,
-                user_id=session["user_id"]  # link the meal to the logged-in user
+                user_id=session["user_id"]
             )
             db.session.add(new_log)
             db.session.commit()
@@ -129,9 +186,14 @@ def log_meals():
     return render_template("logmeals.html", item=None, quantity=None, searched=False)
 
 
+# ---------- Meal Details ----------
 @app.route("/details")
 def meal_details():
-    meal_entries = MealLog.query.order_by(MealLog.timestamp.desc()).all()
+    if "user_id" not in session:
+        flash("Please log in first.", "error")
+        return redirect(url_for("login"))
+
+    meal_entries = MealLog.query.filter_by(user_id=session["user_id"]).order_by(MealLog.timestamp.desc()).all()
 
     total_calories = 0
     total_protein = 0
@@ -155,7 +217,7 @@ def meal_details():
         total_fats += fats
 
         enriched_logs.append({
-            "id": entry.id,  # ✅ Needed for delete buttons
+            "id": entry.id,
             "date": entry.timestamp.date() if entry.timestamp else None,
             "name": food.name,
             "quantity": q,
@@ -167,7 +229,7 @@ def meal_details():
 
     return render_template(
         "meal_details.html",
-        meals=enriched_logs,  # ✅ same variable name as HTML
+        meals=enriched_logs,
         total_calories=round(total_calories, 2),
         total_protein=round(total_protein, 2),
         total_carbs=round(total_carbs, 2),
@@ -175,7 +237,7 @@ def meal_details():
     )
 
 
-# ✅ Route for deleting one entry
+# ---------- Delete Meal ----------
 @app.route("/delete_meal/<int:meal_id>", methods=["POST"])
 def delete_meal(meal_id):
     entry = MealLog.query.get(meal_id)
@@ -188,22 +250,15 @@ def delete_meal(meal_id):
     return redirect(url_for("meal_details"))
 
 
-# ✅ Route for deleting all entries
 @app.route("/delete_all_meals", methods=["POST"])
 def delete_all_meals():
-    MealLog.query.delete()
+    MealLog.query.filter_by(user_id=session["user_id"]).delete()
     db.session.commit()
     flash("All meals deleted successfully!", "success")
     return redirect(url_for("meal_details"))
 
 
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    flash("You have been logged out.")
-    return redirect(url_for("login"))
-
+# ---------- Run App ----------
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
