@@ -2,9 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from models import db, User, FoodItem, MealLog, Goal
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_migrate import Migrate
-from utils import search_food  # your external API search logic
+from utils import search_food
 from decimal import Decimal
 from datetime import datetime
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key_here"
@@ -15,6 +16,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 migrate = Migrate(app, db)
+
+# ------------------ Helper Functions ------------------
+def get_current_user_id():
+    """Return the logged-in user's ID or None."""
+    return session.get("user_id")
+
 
 # ------------------ Routes ------------------
 
@@ -56,7 +63,11 @@ def register():
         flash("Registration successful! Please log in.", "success")
         return redirect(url_for("login"))
 
-    return render_template("signup.html")
+    return render_template("register.html")
+
+@app.route("/")
+def home():
+     return render_template("home.html")
 
 
 @app.route("/logout")
@@ -67,28 +78,45 @@ def logout():
 
 
 # ---------- Dashboard ----------
-@app.route("/")
+
+
 @app.route("/index")
 def index():
     if "user_id" not in session:
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
 
-    # Fetch current user's goal
-    current_goal = Goal.query.filter_by(user_id=session["user_id"]).first()
-    return render_template("index.html", current_goal=current_goal)
+    user_id = session["user_id"]
 
+    # Get current goal
+    current_goal = Goal.query.filter_by(user_id=user_id).first()
+
+    # Calculate total calories today using the relationship
+    total_calories = (
+        db.session.query(func.coalesce(func.sum(FoodItem.calories_per_100g * MealLog.quantity / 100), 0))
+        .select_from(MealLog)
+        .join(FoodItem, MealLog.food_id == FoodItem.id)
+        .filter(MealLog.user_id == user_id)
+        .filter(func.date(MealLog.timestamp) == datetime.utcnow().date())
+        .scalar()
+    )
+
+    return render_template(
+        "index.html",
+        current_goal=current_goal,
+        total_calories=round(total_calories, 2)
+    )
 
 # ---------- Maintenance ----------
 @app.route("/maintenance", methods=["GET", "POST"])
 def maintenance():
-    if "user_id" not in session:
+    user_id = get_current_user_id()
+    if not user_id:
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
 
     calories_from_maintenance = None
     if request.method == "POST":
-        # Example: assume you calculate maintenance calories here
         weight = float(request.form.get("weight", 0))
         height = float(request.form.get("height", 0))
         age = int(request.form.get("age", 0))
@@ -104,27 +132,23 @@ def maintenance():
     return render_template("maintenance.html", calories_from_maintenance=calories_from_maintenance)
 
 
-# ---------- Set Goals ----------from flask import request
-
-
+# ---------- Set Goals ----------
 @app.route("/setgoal", methods=["GET", "POST"])
 def set_goal():
-    if "user_id" not in session:
+    user_id = get_current_user_id()
+    if not user_id:
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
 
-    # If coming from maintenance calculator with calories in query string
     calories = request.args.get("calories", None)
 
     if request.method == "POST":
         calories_input = request.form.get("calories")
         if calories_input:
             calories_value = int(calories_input)
-
-            # Save/update goal for the current user
-            goal = Goal.query.filter_by(user_id=session["user_id"]).first()
+            goal = Goal.query.filter_by(user_id=user_id).first()
             if not goal:
-                goal = Goal(user_id=session["user_id"], calories=calories_value)
+                goal = Goal(user_id=user_id, calories=calories_value)
                 db.session.add(goal)
             else:
                 goal.calories = calories_value
@@ -133,8 +157,7 @@ def set_goal():
             flash("Daily calorie goal set successfully!", "success")
             return redirect(url_for("index"))
 
-    # GET request: render template with pre-filled calories
-    goal = Goal.query.filter_by(user_id=session["user_id"]).first()
+    goal = Goal.query.filter_by(user_id=user_id).first()
     current_calories = calories or (goal.calories if goal else "")
     return render_template("setgoals.html", current_goal={"calories": current_calories})
 
@@ -142,7 +165,8 @@ def set_goal():
 # ---------- Log Meals ----------
 @app.route("/logmeals", methods=["GET", "POST"])
 def log_meals():
-    if "user_id" not in session:
+    user_id = get_current_user_id()
+    if not user_id:
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
 
@@ -168,12 +192,11 @@ def log_meals():
                 else:
                     item = existing
 
-        # Save meal log
         if item:
             new_log = MealLog(
                 food_id=item.id,
                 quantity=quantity,
-                user_id=session["user_id"]
+                user_id=user_id
             )
             db.session.add(new_log)
             db.session.commit()
@@ -189,17 +212,14 @@ def log_meals():
 # ---------- Meal Details ----------
 @app.route("/details")
 def meal_details():
-    if "user_id" not in session:
+    user_id = get_current_user_id()
+    if not user_id:
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
 
-    meal_entries = MealLog.query.filter_by(user_id=session["user_id"]).order_by(MealLog.timestamp.desc()).all()
+    meal_entries = MealLog.query.filter_by(user_id=user_id).order_by(MealLog.timestamp.desc()).all()
 
-    total_calories = 0
-    total_protein = 0
-    total_carbs = 0
-    total_fats = 0
-
+    total_calories = total_protein = total_carbs = total_fats = 0
     enriched_logs = []
 
     for entry in meal_entries:
@@ -240,8 +260,13 @@ def meal_details():
 # ---------- Delete Meal ----------
 @app.route("/delete_meal/<int:meal_id>", methods=["POST"])
 def delete_meal(meal_id):
+    user_id = get_current_user_id()
+    if not user_id:
+        flash("Please log in first.", "error")
+        return redirect(url_for("login"))
+
     entry = MealLog.query.get(meal_id)
-    if entry:
+    if entry and entry.user_id == user_id:
         db.session.delete(entry)
         db.session.commit()
         flash("Meal deleted successfully!", "success")
@@ -252,7 +277,12 @@ def delete_meal(meal_id):
 
 @app.route("/delete_all_meals", methods=["POST"])
 def delete_all_meals():
-    MealLog.query.filter_by(user_id=session["user_id"]).delete()
+    user_id = get_current_user_id()
+    if not user_id:
+        flash("Please log in first.", "error")
+        return redirect(url_for("login"))
+
+    MealLog.query.filter_by(user_id=user_id).delete()
     db.session.commit()
     flash("All meals deleted successfully!", "success")
     return redirect(url_for("meal_details"))

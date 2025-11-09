@@ -3,146 +3,252 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FitCal – Track • Fuel • Thrive</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <header class="header">
-   <div class="container header-flex">
-  <h1 class="logo">FitCal</h1>
-  <nav>
-    <a href="{{ url_for('login') }}" class="btn login">Login</a>
-    <a href="{{ url_for('register') }}" class="btn register">Register</a>
-  </nav>
-</div>
+  <title>FitCal – Balance Your Wellness</title>
 
-  </header>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 
-  <section class="hero">
-    <div class="hero-content">
-      <h2>Your Personal Calorie Companion</h2>
-      <p>
-        Welcome to <strong>FitCal</strong> — your go-to platform for tracking what you eat, how much you burn, and how you feel. Whether you're on a mission to lose weight, build muscle, or simply maintain a healthier lifestyle, FitCal provides a user-friendly interface to log your meals and gain insightful feedback.
-      </p>
-      <p>
-        Designed with simplicity and science in mind, FitCal helps you maintain consistency and awareness of your daily caloric intake. Built-in nutrition intelligence adapts to your needs, empowering you to make smarter dietary choices without stress.
-      </p>
-    </div>
-  </section>
-
-  <section class="about">
-    <div class="container">
-      <h3>What is FitCal?</h3>
-      <p>
-        FitCal is a smart calorie tracker designed for everyone — from fitness beginners to athletes. Our mission is to help you stay informed and in control of your nutritional habits. With FitCal, you can:
-      </p>
-      <ul>
-        <li><strong>Track:</strong> Log your daily meals and monitor your calorie intake easily.</li>
-        <li><strong>Fuel:</strong> Get personalized nutritional suggestions based on your goals — whether you're aiming to lose weight, gain muscle, or maintain your health.</li>
-        <li><strong>Thrive:</strong> Use insights and trends to build sustainable eating habits and improve your overall lifestyle.</li>
-      </ul>
-      <p>FitCal brings clarity to your plate — one meal at a time.</p>
-    </div>
-  </section>
-
-  <footer class="footer">
-    <p>&copy; 2025 FitCal. All rights reserved.</p>
-  </footer>
-=======
-  <meta charset="UTF-8">
-  <title>Welcome – FitCal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --deep-green: #3b4d35;
-      --coffee: #8b6f47;
-      --sage: #a7b79f;
-      --white: #fefdfb;
-      --text-dark: #2d2b26;
-      --bg-main: #f3f5f0;
-      --bg-light: #eef1e6;
-      --button-gradient: linear-gradient(135deg, #3b4d35, #4f6548);
+      --deep-green: #1e2e23;
+      --sage: #3e5544;
+      --ivory: #f7f4ee;
+      --taupe: #d6cfc3;
+      --accent: #b29f74;
+      --text-dark: #2e2b27;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     body {
+      background-color: var(--ivory);
+      color: var(--text-dark);
       font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(to bottom, var(--bg-main), var(--bg-light));
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background-color: var(--deep-green);
+      color: #f8f8f8;
+      text-align: center;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* Hero Section */
+    .hero {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      color: var(--text-dark);
-      animation: fadeIn 0.8s ease forwards;
-    }
-
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .container {
+      justify-content: center;
       text-align: center;
-      background: var(--white);
-      padding: 40px 35px;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-      max-width: 500px;
-      width: 90%;
+      padding: 6rem 1.5rem 4rem;
+      background: linear-gradient(135deg, var(--sage) 40%, var(--accent));
+      color: #fff;
     }
 
-    h1 {
-      font-size: 2rem;
-      color: var(--deep-green);
-      margin-bottom: 15px;
-      text-shadow: 1px 1px 2px rgba(139,111,71,0.3);
+    .hero h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      margin-bottom: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
-    p {
+    .hero p {
+      max-width: 650px;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+      color: #f3f1eb;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1.8rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hero-buttons a {
+      text-decoration: none;
+      padding: 0.9rem 2.2rem;
+      border-radius: 8px;
+      font-weight: 600;
       font-size: 1rem;
-      margin-bottom: 25px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-login {
+      background-color: #fff;
+      color: var(--sage);
+      border: 2px solid #fff;
+    }
+
+    .btn-login:hover {
+      background-color: transparent;
+      color: #fff;
+    }
+
+    .btn-signup {
+      background-color: var(--accent);
+      color: #fff;
+      border: 2px solid var(--accent);
+    }
+
+    .btn-signup:hover {
+      background-color: transparent;
+      border-color: #fff;
+      color: #fff;
+    }
+
+    /* Features Section */
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      padding: 4rem 2rem;
+      background-color: var(--ivory);
+    }
+
+    .feature {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      text-align: center;
+      max-width: 250px;
+      flex: 1 1 220px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .feature:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+    }
+
+    .feature i {
+      font-size: 2rem;
+      color: var(--sage);
+      margin-bottom: 12px;
+    }
+
+    .feature h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+      color: var(--accent);
+      font-family: 'Playfair Display', serif;
+    }
+
+    .feature p {
+      font-size: 0.95rem;
       color: var(--text-dark);
       line-height: 1.5;
     }
 
-    .btn {
-      display: inline-block;
-      padding: 12px 25px;
-      margin: 10px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--white);
-      background: var(--button-gradient);
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      transition: transform 0.2s ease, background 0.3s ease;
+    /* About Section */
+    .about {
+      background-color: var(--taupe);
+      text-align: center;
+      padding: 4rem 2rem;
     }
 
-    .btn:hover {
-      transform: scale(1.05);
-      background: linear-gradient(135deg, #2d3c2a, #3f5238);
+    .about h2 {
+      font-size: 1.9rem;
+      color: var(--deep-green);
+      margin-bottom: 1rem;
+      font-family: 'Playfair Display', serif;
     }
 
+    .about p {
+      max-width: 700px;
+      margin: 0 auto;
+      font-size: 1rem;
+      line-height: 1.7;
+      color: var(--text-dark);
+    }
+
+    /* Footer */
     footer {
-      margin-top: 30px;
-      font-size: 12px;
-      color: #7a6a55;
+      background-color: var(--deep-green);
+      color: #f8f8f8;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      letter-spacing: 0.3px;
+    }
+
+    @media (max-width: 800px) {
+      .hero h2 { font-size: 2rem; }
+      .hero p { font-size: 0.95rem; }
+      .hero-buttons a { padding: 0.8rem 1.8rem; font-size: 0.95rem; }
     }
   </style>
 </head>
+
 <body>
+  <!-- Header -->
+  <header>
+    <h1>FitCal</h1>
+  </header>
 
-  <div class="container">
-    <h1>Welcome to FitCal</h1>
-    <p>Track your meals, monitor your calories, and stay on top of your nutrition effortlessly.</p>
+  <!-- Hero -->
+  <section class="hero">
+    <h2>Track • Fuel • Thrive</h2>
+    <p>FitCal helps you manage your nutrition, understand your body, and achieve your wellness goals with clarity and balance — all in one elegant platform.</p>
+    <div class="hero-buttons">
+      <a href="{{ url_for('login') }}" class="btn-login">Log In</a>
+      <a href="{{ url_for('register') }}" class="btn-signup">Register</a>
+    </div>
+  </section>
 
-    <a href="{{ url_for('login') }}" class="btn">Login</a>
-    <a href="{{ url_for('register') }}" class="btn">Sign Up</a>
-  </div>
+  <!-- Features -->
+  <section id="features" class="features">
+    <div class="feature">
+      <i class="fas fa-apple-alt"></i>
+      <h3>Smart Nutrition</h3>
+      <p>Log your meals effortlessly and stay aware of your calorie intake and macro balance.</p>
+    </div>
+    <div class="feature">
+      <i class="fas fa-running"></i>
+      <h3>Fitness Tracking</h3>
+      <p>Record workouts, monitor progress, and align activity with your nutrition goals.</p>
+    </div>
+    <div class="feature">
+      <i class="fas fa-bullseye"></i>
+      <h3>Goal Management</h3>
+      <p>Set calorie or weight targets and watch your consistency transform your results.</p>
+    </div>
+    <div class="feature">
+      <i class="fas fa-chart-line"></i>
+      <h3>Insightful Analytics</h3>
+      <p>Visualize your habits and progress through clean, easy-to-read charts and stats.</p>
+    </div>
+  </section>
 
-  <footer>FitCal – Track • Fuel • Thrive</footer>
+  <!-- About -->
+  <section id="about" class="about">
+    <h2>About FitCal</h2>
+    <p>Designed for those who value balance and mindfulness, FitCal isn’t just another calorie tracker — it’s a companion on your wellness journey. Whether your goal is to lose, gain, or maintain, we help you move forward with intention and simplicity.</p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 FitCal — Built for Balance, Inspired by Wellness.
+  </footer>
 </body>
 </html>

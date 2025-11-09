@@ -43,17 +43,17 @@ class Goal(db.Model):
     def __repr__(self):
         return f"<Goal {self.goal_type} {self.calories} kcal for {self.user.username}>"
     
-    
+
 class MealLog(db.Model):
     __tablename__ = "meal_logs"
     id = db.Column(db.Integer, primary_key=True)
-    food_id = db.Column(db.Integer, db.ForeignKey("food_items.id"), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    quantity = db.Column(db.Float, nullable=False)
+    food_id = db.Column(db.Integer, db.ForeignKey("food_items.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    quantity = db.Column(db.Float)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Relationship to FoodItem
     food = db.relationship("FoodItem", backref="meal_logs")
-    user = db.relationship("User", backref="meal_logs")
 
 class User(db.Model):
     __tablename__ = "users"
