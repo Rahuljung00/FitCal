@@ -36,13 +36,14 @@ def login():
         if _user and _user.verify_password(password):
             session["user_id"] = _user.id
             session["username"] = _user.username
-            flash("Login successful!", "success")
+            #Don't flash here to avoid message carrying forward
             return redirect(url_for("index"))
         else:
             flash("Invalid username or password.", "error")
             return redirect(url_for("login"))
 
     return render_template("login.html")
+
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -170,8 +171,7 @@ def log_meals():
         flash("Please log in first.", "error")
         return redirect(url_for("login"))
 
-    item = None
-    quantity = None
+    last_entry = None
     searched = False
 
     if request.method == "POST":
@@ -200,13 +200,23 @@ def log_meals():
             )
             db.session.add(new_log)
             db.session.commit()
+
+            # Prepare dictionary for template
+            last_entry = {
+                "name": item.name,
+                "quantity": float(quantity),
+                "calories": float(item.calories_per_100g) * float(quantity) / 100,
+                "protein": float(item.protein) * float(quantity) / 100,
+                "carbs": float(item.carbs) * float(quantity) / 100,
+                "fats": float(item.fats) * float(quantity) / 100
+            }
+
             flash(f"{item.name} ({quantity}g) logged successfully!", "success")
         else:
             flash("Food not found. Please try another name.", "error")
 
-        return render_template("logmeals.html", item=item, quantity=quantity, searched=searched)
+    return render_template("logmeals.html", item=last_entry, searched=searched)
 
-    return render_template("logmeals.html", item=None, quantity=None, searched=False)
 
 
 # ---------- Meal Details ----------

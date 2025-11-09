@@ -12,8 +12,8 @@
 
   <style>
     :root {
-      --green-dark: #1e2e23;
-      --green-light: #324c3b;
+      --green-dark: #184025ff;
+      --green-light: #617267ff;
       --beige-light: #f2f0ecff;
       --beige-dark: #8b8478ff;
       --text-dark: #0c0a09ff;
@@ -252,12 +252,13 @@
 <body>
 
   <!-- Sidebar -->
-  <nav class="sidebar">
-    <a class="nav-link active" href="{{ url_for('index') }}"><i class="fas fa-home"></i>Home</a>
-    <a class="nav-link" href="{{ url_for('log_meals') }}"><i class="fas fa-seedling"></i>Log Meals</a>
-    <a class="nav-link" href="{{ url_for('maintenance') }}"><i class="fas fa-dumbbell"></i>Maintenance</a>
-    <a class="nav-link" href="{{ url_for('set_goal') }}"><i class="fas fa-chart-pie"></i>Setgoal</a>
-  </nav>
+  <!-- Sidebar -->
+<nav class="sidebar">
+  <a class="nav-link active" href="{{ url_for('index') }}"><i class="fas fa-home"></i>Home</a>
+  <a class="nav-link" href="{{ url_for('maintenance') }}"><i class="fas fa-dumbbell"></i>Maintenance</a>
+  <a class="nav-link" href="{{ url_for('log_meals') }}"><i class="fas fa-seedling"></i>Log Meals</a>
+  <a class="nav-link" href="{{ url_for('set_goal') }}"><i class="fas fa-chart-pie"></i>Setgoal</a>
+</nav>
 
   <!-- Main -->
   <main class="main-content">
